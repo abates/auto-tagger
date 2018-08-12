@@ -68,10 +68,15 @@ func (mp4 *Mp4) Read(filename string) (Metadata, error) {
 		m, err := tag.ReadFrom(file)
 		if err == nil {
 			tags := m.Raw()
-			fmt.Printf("%+v", tags)
 			metadata.title = m.Title()
-			metadata.synopsis = tags["ldes"].(string)
-			metadata.releaseDate, err = time.Parse("2006", tags["\xa9day"].(string))
+			if t, found := tags["ldes"]; found {
+				metadata.synopsis = t.(string)
+			}
+
+			if t, found := tags["\xa9day"]; found {
+				metadata.releaseDate, err = time.Parse("2006", t.(string))
+			}
+
 			if err == nil && m.Picture() != nil {
 				metadata.poster, _, err = image.Decode(bytes.NewReader(m.Picture().Data))
 			}

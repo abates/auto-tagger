@@ -95,8 +95,7 @@ func processFile(filename string) (err error) {
 					metadata, err := reader.Read(filename)
 					if err == nil {
 						if metadata.Title() != "" {
-							log.Printf("Skipping %q", filename)
-							return nil
+							return fmt.Errorf("existing metadata")
 						}
 					}
 				} else {
@@ -146,8 +145,10 @@ func main() {
 			err = processFile(filename)
 		}
 
-		if err != nil {
-			log.Printf("Failed processing %q: %v", filename, err)
+		if err == nil {
+			log.Printf("Processed %q", filename)
+		} else {
+			log.Printf("%q: %v", filename, err)
 		}
 	}
 }
